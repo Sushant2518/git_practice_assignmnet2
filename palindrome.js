@@ -1,8 +1,8 @@
 let name = "sushant";
 
-let rev;
+let rev = "";
 
-for(let i=name.length-1; i=0; i--){
+for(let i=name.length-1; i>=0; i--){
       rev+=name[i];     	
 }
 
