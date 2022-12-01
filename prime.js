@@ -1,6 +1,6 @@
 function check_prime(number){
-  let counter;
-  for(let i=1; i<=number; i--){
+  let counter = 0;
+  for(let i=1; i<=number; i++){
     if(number%i==0){
       counter++;
     }
