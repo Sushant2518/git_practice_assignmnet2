@@ -1,0 +1,473 @@
+Agenda
+SQL : DDL [Almost Done]
+SQL : DML
+SQL : DRL
+      SELECT, WHERE
+	  Single row functions & multi row functions
+	  Group By & Having clause
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//how to create not null and unique any colunm
+CREATE TABLE employee(
+	email VARCHAR(50) UNIQUE NOT NULL
+)
+
+ALTER TABLE email MODIFY VARCHAR(50) UNIQUE NOT NULL;
+
+//how to create composite primary key
+Table" cbse_student
+rollNo int
+session varchar((10)
+name varchar(20) NOT NULL
+percentage decimal(5, 2) DEFAULT (33.0)
+
+#Incorrect version
+CREATE TABLE cbse_student(
+	rollNo int(8) PRIMARY KEY,
+	session varchar((10) PRIMARY KEY,
+	name varchar(20) NOT NULL,
+	percentage decimal(5, 2) DEFAULT (33.0)
+);
+
+#correct version
+CREATE TABLE cbse_student(
+	rollNo int(8),
+	session varchar((10),
+	name varchar(20) NOT NULL,
+	percentage decimal(5, 2) DEFAULT (33.0),
+	(rollNo, session) PRIMARY KEY
+);
+
+here in the above example NOT NULL & DEFAULT (33.0) both are column level constraints
+here in the above example PRIMARY KEY constraints is an example of table level constraints
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+[Write Query to see the structure of table student]
+
+Add following records in the table st
+3, CDE , cde@ms.com, 75.24, Maharashtra
+4, def , def@ms.com, 72.69, West Bengal
+5, efg , efg@ms.com, 33.00, Odisha
+6, fgh , fgh@ms.com, 33.00, Delhi
+7, ghi , ghi@ms.com, 33.00, Punjab
+8, ijk , ijk@ms.com, 77.36, Haryana
+9, jkl , jkl@ms.com, 85.55, Rajasthan
+10, AED , NULL, 56.00, Karnataka
+
+INSERT INTO st
+VALUES
+(3, 'CDE' , 'cde@ms.com', 75.24, 'Maharashtra'),
+(4, 'def' , 'def@ms.com', 72.69, 'West Bengal'),
+(8, 'ijk', 'ijk@ms.com', '77.36', 'Haryana'),
+(9, 'jkl' , 'jkl@ms.com', 85.55, 'Rajasthan'),
+(10, 'AED' , NULL, 56.00, 'Karnataka');
+
+INSERT INTO st
+(rollNo, name, email, state)
+VALUES
+(5, 'efg' , 'efg@ms.com', 'Odisha'),
+(6, 'fgh' , 'fgh@ms.com', 'Delhi'),
+(7, 'ghi' , 'ghi@ms.com', 'Punjab');
+
+[View records of the table]
+SELECT * FROM st;
++--------+------+------------+-------+-------------+
+| rollNo | name | email      | x_per | state       |
++--------+------+------------+-------+-------------+
+|      1 | ABC  | abc@ms.com | 75.42 | Karnataka   |
+|      2 | BCD  | bcd@ms.com | 33.00 | Rajasthan   |
+|      3 | CDE  | cde@ms.com | 75.24 | Maharashtra |
+|      4 | def  | def@ms.com | 72.69 | West Bengal |
+|      5 | efg  | efg@ms.com | 33.00 | Odisha      |
+|      6 | fgh  | fgh@ms.com | 33.00 | Delhi       |
+|      7 | ghi  | ghi@ms.com | 33.00 | Punjab      |
+|      8 | ijk  | ijk@ms.com | 77.36 | Haryana     |
+|      9 | jkl  | jkl@ms.com | 85.55 | Rajasthan   |
+|     10 | AED  | NULL       | 56.00 | Karnataka   |
++--------+------+------------+-------+-------------+
+
+Query to increase the x_per by 2% for all scholars whose x_per is more than 70.0
+
+UPDATE st
+SET x_per = x_per + 2
+WHERE x_per > 70.0;
+
+Query to set percentage to 66.00, state to kerala for student efg
+
+UPDATE st
+SET x_per = 66.00, state = 'kerela'
+WHERE name = 'efg';
+
+[View records of the table]
+SELECT * FROM st;
+
+Query to delete students whose percentage is more than or equal to 85.00
+
+DELETE FROM st
+WHERE x_per >= 85.00;
+
+Write query to view all records of the table
+SELECT * FROM st;
+
+Write query to view all records of the table such that only rollNo, name and x_per column should be in result.
+SELECT rollNo, name, x_per
+FROM st;
+
+Write query to display all distict value for column x_per
+SELECT DISTINCT(x_per)
+FROM st;
+
+you can find the distinct on more than one column also. The column name must be comma separate after distinct clause and use if parenthesis is not okay now.
+
+Write query to display all distict value for column x_per
+SELECT DISTINCT x_per, state
+FROM st;
+
+
+Write query to view all records of the table such that rollNo should be displayed with heading Roll Number, name should be displayed with heading Student Name and x_per should be displayed with heading Inter Exam Percentage.
+
+SELECT rollNo "Roll Number", name 'Student Name', x_per AS "Inter Exam Percentage"
+FROM st;
+
+Write query to view all records of the table such that rollNo should be displayed with heading RN, name should be displayed with heading SName and x_per should be displayed with heading 10_Per.
+
+SELECT rollNo RN, name SName, x_per AS 10_Per
+FROM st;
+
+Write query to add 10 to x_per and display with heading new_x_per (No need to use update query because this is one time result)
+SELECT (x_per + 10) new_x_per
+FROM st;
+
+Write query to find all students whose percentage is is more than 74.69
+SELECT *
+FROM st
+WHERE x_per > 74.69;
+
+Write query to find all students whose percentage is is more than or equal to 74.69
+SELECT *
+FROM st
+WHERE x_per >= 74.69;
+
+Write query to find rollNo as RN, name as Sname, x_per as 10_per whose x_per is less than 66.00
+SELECT rollNo as RN, name as Sname, x_per as 10_per
+FROM st
+WHERE x_per < 66.00;
+
+Write query to find all students whose x_per is less than or equal to 66.00
+SELECT *
+FROM st
+WHERE x_per <= 66.00;
+
+Write query to find all students whose state is Karnataka
+SELECT *
+FROM st
+WHERE state = 'Karnataka';
+
+Write query to find all students whose x_per is not equal to 33.00
+SELECT *
+FROM st
+WHERE x_per != 33.00;
+
+Write a query to find all students whose x_per is more than or equals to 33.00 and less than or equals to 74.69;
+Solution-01: Using &&/AND
+SELECT *
+FROM st
+WHERE x_per >= 33.00 AND x_per <= 74.69;
+
+SELECT *
+FROM st
+WHERE x_per >= 33.00 && x_per <= 74.69;
+
+Solution-02: Using BETWEEN ... AND ...
+SELECT *
+FROM st
+WHERE x_per BETWEEN 33.00 AND 74.69;
+
+Write a query to find all students whose x_per is neither more than or equals to 33.00 and nor less than or equals to 74.69;
+SELECT *
+FROM st
+WHERE x_per NOT BETWEEN 33.00 AND 74.69;
+
+Write a query to find all students whose percentage is more than or equal to 60.00 and the student must be from state Karnataka
+SELECT *
+FROM st
+WHERE x_per >= 60.00 AND state = 'Karnataka';
+
+Write a query to find all students whose percentage is more than or equal to 60.00 or the student must be from state Karnataka
+
+Solution-01
+SELECT *
+FROM st
+WHERE x_per >= 60.00 || state = 'Karnataka';
+
+Solution-02
+SELECT *
+FROM st
+WHERE x_per >= 60.00 OR state = 'Karnataka';
+
+Write a query to find all students whose percentage is more than 60.00 and less than 77.65 or whose state is Karnataka
+SELECT *
+FROM st
+WHERE (x_per > 60.00 AND x_per < 77.65)
+OR state = 'Karnataka';
+
+Write a query to find all scholars whose state is either Karnataka, Punjab or Rajasthan
+SELECT *
+FROM st
+WHERE state = 'Karnataka' || state = 'Punjab' || state = 'Rajasthan';
+
+#Incorrect version
+SELECT *
+FROM st
+WHERE state = 'Karnataka' || 'Punjab' || 'Rajasthan';
+
+#smart choice
+SELECT *
+FROM st
+WHERE state IN('Karnataka', 'Punjab', 'Rajasthan');
+
+Write a query to find all scholars whose state is neither Karnataka nor Punjab nor Rajasthan
+SELECT *
+FROM st
+WHERE state NOT IN('Karnataka', 'Punjab', 'Rajasthan');
+
+
+Write a query to find all scholars whose email is null
+#Incorrect version
+SELECT *
+FROM st
+WHERE email = null;
+
+#Correct version
+SELECT *
+FROM st
+WHERE email IS NULL;
+
+Write a query to find all scholars whose email is not null
+#Incorrect version
+SELECT *
+FROM st
+WHERE email != null;
+
+#Correct version
+SELECT *
+FROM st
+WHERE email IS NOT NULL;
+
+Write a query to find all scholars whose name starts with letter 'a'
+SELECT *
+FROM st
+WHERE name LIKE 'a%';
+
+Write a query to find all scholars whose name ends with letter 'd'
+SELECT *
+FROM st
+WHERE name LIKE '%d';
+
+Write a query to find all scholars whose name has letter 'C' anywhere
+SELECT *
+FROM st
+WHERE name LIKE '%C%';
+
+Write a query to find all scholars whose name has second letter 'B'
+SELECT *
+FROM st
+WHERE name LIKE '_B%';
+
+Write a query to find all scholars whose name has second last letter 'C'
+SELECT *
+FROM st
+WHERE name LIKE '%C_';
+
+Write a query to find all scholars whose name has 3 letters and middle letter should be 'D'
+SELECT *
+FROM st
+WHERE name LIKE '_D_';
+
+Write a query to show the records of students in the ascending order of x_per
+#Solution-01
+SELECT *
+FROM st
+ORDER BY x_per;
+
+#Solution-02
+SELECT *
+FROM st
+ORDER BY x_per ASC;
+
+Write a query to show the records of students in the ascending order of the x_per if tie in x_per they should be displayed in the descending order of the rollNo
+SELECT *
+FROM st
+ORDER BY x_per, rollNo DESC;
+
+Write a query to show name, email and x_per of students in the descending order of name
+SELECT name, email, x_per
+FROM st
+ORDER BY name DESC;
+
+Write a query to show name, email and x_per of students in the descending order of name. display first 5 records only.
+SELECT name, email, x_per
+FROM st
+ORDER BY name DESC
+LIMIT 5;	[Here 5 is total records]
+
+Write a query to show name, email and x_per of students in the descending order of name. display 5 records only but start from record number 4. [Tip: the first record is at index-0]
+SELECT name, email, x_per
+FROM st
+ORDER BY name DESC
+LIMIT 3, 5;	[Here 3 is started index but 5 is total records]
+
+<!-- Queries for single row function -->
+round(value, decimal-places = 0)
+SELECT round(150.4), round(150.5), round(150.6);
++--------------+--------------+--------------+
+| round(150.4) | round(150.5) | round(150.6) |
++--------------+--------------+--------------+
+|          150 |          151 |          151 |
++--------------+--------------+--------------+
+#The above query is same as
+SELECT round(150.4, 0), round(150.5, 0), round(150.6, 0);
+150.4 --> possible value 150 & 151 --> (150 + 151) / 2 --> 150.5 --> 150.4 < 150.5 ---> 150
+150.5 --> possible value 150 & 151 --> (150 + 151) / 2 --> 150.5 --> 150.5 >= 150.5 ---> 151
+150.6 --> possible value 150 & 151 -->  (150 + 151) / 2 --> 150.5 ->  --> 150.6 >= 150.5 ---> 151
+
+SELECT round(150.44, 1), round(150.45, 1), round(150.46, 1);
++------------------+------------------+------------------+
+| round(150.44, 1) | round(150.45, 1) | round(150.46, 1) |
++------------------+------------------+------------------+
+|            150.4 |            150.5 |            150.5 |
++------------------+------------------+------------------+
+150.44 --> possible value 150.4 & 150.5 --> (150.4 + 150.5)/2 --> 150.45 ---> 150.44 < 150.45 --> 150.4
+150.45 --> possible value 150.4 & 150.5 --> (150.4 + 150.5)/2 --> 150.45 ---> 150.45 >= 150.45 --> 150.5
+150.46 --> possible value 150.4 & 150.5 --> (150.4 + 150.5)/2 --> 150.45 ---> 150.46 >= 150.45 --> 150.5
+
+truncate(value, decimal-places): just remove whatever extra is-
+SELECT truncate(150.4, 0), truncate(150.5, 0), truncate(150.6, 0);
++--------------------+--------------------+--------------------+
+| truncate(150.4, 0) | truncate(150.5, 0) | truncate(150.6, 0) |
++--------------------+--------------------+--------------------+
+|                150 |                150 |                150 |
++--------------------+--------------------+--------------------+
+150.4 --> 150
+150.5 --> 150
+150.6 --> 150
+
+SELECT truncate(150.44, 1), truncate(150.45, 1), truncate(150.46, 1);
++---------------------+---------------------+---------------------+
+| truncate(150.44, 1) | truncate(150.45, 1) | truncate(150.46, 1) |
++---------------------+---------------------+---------------------+
+|               150.4 |               150.4 |               150.4 |
++---------------------+---------------------+---------------------+
+
+SELECT ceil(150.01), ceil(150.50), ceil(150.99);
++--------------+--------------+--------------+
+| ceil(150.01) | ceil(150.50) | ceil(150.99) |
++--------------+--------------+--------------+
+|          151 |          151 |          151 |
++--------------+--------------+--------------+
+
+SELECT floor(150.01), floor(150.50), floor(150.99);
++---------------+---------------+---------------+
+| floor(150.01) | floor(150.50) | floor(150.99) |
++---------------+---------------+---------------+
+|           150 |           150 |           150 |
++---------------+---------------+---------------+
+
+SELECT greatest(10, 50, 45, 78, 5, -6), least(10, 50, 45, 78, 5, -6);
++---------------------------------+------------------------------+
+| greatest(10, 50, 45, 78, 5, -6) | least(10, 50, 45, 78, 5, -6) |
++---------------------------------+------------------------------+
+|                              78 |                           -6 |
++---------------------------------+------------------------------+
+
+SELECT REPLACE('mesei', 'e', 'a');
++----------------------------+
+| REPLACE('mesei', 'e', 'a') |
++----------------------------+
+| masai                      |
++----------------------------+
+
+Query to print details in format <name> has scored <x_per> in class X for every student
+SELECT CONCAT(CONCAT(CONCAT(name, " has scored "), x_per), " in class X") REMARK
+FROM st;
++---------------------------------+
+| REMARK                          |
++---------------------------------+
+| ABC has scored 77.42 in class X |
+| BCD has scored 33.00 in class X |
+| CDE has scored 77.24 in class X |
+| def has scored 74.69 in class X |
+| efg has scored 66.00 in class X |
+| fgh has scored 33.00 in class X |
+| ghi has scored 33.00 in class X |
+| ijk has scored 79.36 in class X |
+| AED has scored 56.00 in class X |
++---------------------------------+
+
+SUBSTR(string, start-index) [index for string is started from 1 in Mysql]
+SUBSTR(string, start-index, number of characters) [index for string is started from 1 in Mysql]
+mysql> SELECT SUBSTR('MASAI', 2), SUBSTR('School', 3,3);
++--------------------+-----------------------+
+| SUBSTR('MASAI', 2) | SUBSTR('School', 3,3) |
++--------------------+-----------------------+
+| ASAI               | hoo                   |
++--------------------+-----------------------+
+
+SELECT CURDATE();
++------------+
+| CURDATE()  |
++------------+
+| 2023-05-17 |
++------------+
+
+SELECT NOW(), SLEEP(3), NOW();
++---------------------+----------+---------------------+
+| NOW()               | SLEEP(3) | NOW()               |
++---------------------+----------+---------------------+
+| 2023-05-17 13:43:19 |        0 | 2023-05-17 13:43:19 |
++---------------------+----------+---------------------+
+
+mysql> SELECT SYSDATE(), SLEEP(3), SYSDATE();.
++---------------------+----------+---------------------+
+| SYSDATE()           | SLEEP(3) | SYSDATE()           |
++---------------------+----------+---------------------+
+| 2023-05-17 13:43:43 |        0 | 2023-05-17 13:43:46 |
++---------------------+----------+---------------------+
+
+mysql> SELECT DATE_FORMAT(CURDATE(), '%d-%m-%Y');
++------------------------------------+
+| DATE_FORMAT(CURDATE(), '%d-%m-%Y') |
++------------------------------------+
+| 17-05-2023                         |
++------------------------------------+
+
+mysql> SELECT ADDDATE(CURDATE(), INTERVAL 10 DAY);
++-------------------------------------+
+| ADDDATE(CURDATE(), INTERVAL 10 DAY) |
++-------------------------------------+
+| 2023-05-27                          |
++-------------------------------------+
+
+Write a query to display minimum percentage among all students.
+SELECT MIN(x_per) FROM st;
+
+Write a query to display maximum percentage among all students.
+SELECT MAX(x_per) FROM st;
+
+Write a query to display total percentage of all students.
+SELECT SUM(x_per) FROM st;
+
+Write a query to display average percentage of all students.
+SELECT AVG(x_per) FROM st;
+
+Write a query to count total students who have an email id, count total students who have x_per and counting of total students.
+SELECT count(email), count(x_per), count(*)
+FROM st;
+
+Write a query to rollno, name and email of all students but if a student do not have an email then 'No Email' should be displayed instead of null
+SELECT rollno, name, IF(email IS NOT NULL, email, 'NO EMAIL') FROM st;
+
+Write a query to name, x_per and remark for student such that remark should be according to following criteria
+WHEN x_per < 33.00 - 'FAIL'
+WHEN x_per < 60.00 - 'PASS, IMPROVEMENT REQUIRED'
+WHEN x_per < 75.00 - 'PASS, GOOD JOB'
+ELSE 'GENIUS'

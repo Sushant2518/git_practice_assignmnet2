@@ -1,0 +1,389 @@
+Query to perform full outer join
+UNION and UNION ALL [Done]
+Full Outer Join [Done]
+Self Join [Done]
+Subqueries []
+
+UNION and UNION ALL
+(i) Display details of all categories whose cat_name has letter 'e' anywhere
+SELECT * FROM category WHERE cat_name LIKE '%e%';
++--------+---------------------+
+| cat_id | cat_name            |
++--------+---------------------+
+|      1 | Electronics         |
+|      3 | Furniture           |
+|      4 | Food Items          |
+|      5 | House-keeping Goods |
++--------+---------------------+
+
+(i) Display details of all categories whose cat_id is from 3 to 5
+SELECT * FROM category WHERE cat_id BETWEEN 3 AND 5;
++--------+---------------------+
+| cat_id | cat_name            |
++--------+---------------------+
+|      3 | Furniture           |
+|      4 | Food Items          |
+|      5 | House-keeping Goods |
++--------+---------------------+
+
+combine result of both queries and display
+SELECT * FROM category WHERE cat_name LIKE '%e%'
+UNION
+SELECT * FROM category WHERE cat_id BETWEEN 3 AND 5;
++--------+---------------------+
+| cat_id | cat_name            |
++--------+---------------------+
+|      1 | Electronics         |
+|      3 | Furniture           |
+|      4 | Food Items          |
+|      5 | House-keeping Goods |
++--------+---------------------+
+
+SELECT * FROM category WHERE cat_name LIKE '%e%'
+UNION ALL
+SELECT * FROM category WHERE cat_id BETWEEN 3 AND 5;
+
+UNION ALL is used to display the duplicate entries but UNION is used to display the distinct entries.
+The number of column fetched from both queries in UNION must be same.
+
+#Incorrect Query
+SELECT cat_id, cat_name FROM category WHERE cat_name LIKE '%e%'
+UNION
+SELECT cat_name FROM category WHERE cat_id BETWEEN 3 AND 5;
+
+Full outer Join = Left Join UNION Right Join
+SELECT * FROM Category C LEFT JOIN Product P ON C.cat_id = P.category_id
+UNION
+SELECT * FROM Category C RIGHT JOIN Product P ON C.cat_id = P.category_id;
+
+Output
++--------+---------------------+--------+----------------+----------+------------+-------------+
+| cat_id | cat_name            | pro_id | pro_name       | MRP      | MFG_DATE   | category_id |
++--------+---------------------+--------+----------------+----------+------------+-------------+
+|      1 | Electronics         |      4 | Microwave Oven | 10500.00 | 2022-05-15 |           1 |
+|      1 | Electronics         |      5 | AC             | 34500.00 | 2022-05-01 |           1 |
+|      2 | Stationary          |      1 | Parker Pen     |   349.00 | 2022-06-16 |           2 |
+|      3 | Furniture           |      2 | Student Chair  |  1499.00 | 2021-12-31 |           3 |
+|      4 | Food Items          |      3 | Dark Chocolate |   399.00 | 2022-04-30 |           4 |
+|      5 | House-keeping Goods |   NULL | NULL           |     NULL | NULL       |        NULL |
+|   NULL | NULL                |      6 | Footware       |   599.00 | 2022-05-01 |        NULL |
++--------+---------------------+--------+----------------+----------+------------+-------------+
+
+Write query to apply inner join on following tables-
+customer(cid, cname, dob, address)
+account(acc_no, balance, opening_date, cid)
+transaction(tid, amount, transaction_date, acc_no)
+
+SELECT C.cid, cname, A.acc_no, balance, amount
+FROM customer C INNER JOIN account A
+ON C.cid = A.cid INNER JOIN transaction T
+ON T.acc_no = A.acc_no;
+
+Create table soldier with following structure-
+sol_id VARCHAR(4) PRIMARY KEY
+sol_name VARCHAR(4) NOT NULL
+sol_age INT
+col_id VARCHAR(4) Foreign Key
+
+CREATE TABLE soldier(
+	sol_id VARCHAR(4) PRIMARY KEY,
+	sol_name VARCHAR(4) NOT NULL,
+	sol_age INT,
+	col_id VARCHAR(4),
+	CONSTRAINT fk_col_sol FOREIGN KEY(col_id) REFERENCES soldier(sol_id)
+);
+
+INSERT INTO soldier VALUES
+('S001', 'ABC', 34, NULL),
+('S002', 'BCD', 26, 'S001'),
+('S003', 'CDE', 28, 'S001'),
+('S004', 'DEF', 35, NULL),
+('S005', 'FGH', 26, 'S004');
+
+Write query to display soldier name along with the colonel name
+
+SELECT S.sol_name "Soldeir Name", C.sol_name "Colonel Name"
+FROM soldier S INNER JOIN soldier C
+ON S.col_id = C.sol_id;
+
+Write query to display colonel names such that a colonel must have atleast two soldeirs under his super vision
+SELECT C.sol_name
+FROM soldier C INNER JOIN soldier S
+ON C.sol_id = S.col_id
+GROUP BY C.sol_name
+HAVING COUNT(*) >= 2;
+
+
+Subquery Starts here
+[Write query to view all records of table st]
+Write a query to find record of students whose percentage is maximum among all scholars
+
+SELECT * FROM st WHERE x_per = (SELECT MAX(x_per) FROM st);
++--------+------+------------+-------+---------+
+| rollNo | name | email      | x_per | state   |
++--------+------+------------+-------+---------+
+|      8 | ijk  | ijk@ms.com | 79.36 | Haryana |
++--------+------+------------+-------+---------+
+
+You need to write query to find record of students whose percentage is more than the maximum percentage of all scholars from Karnataka
+
+SELECT * FROM st WHERE x_per = (SELECT MAX(x_per) FROM st WHERE state = 'Karnataka');
++--------+------+------------+-------+-----------+
+| rollNo | name | email      | x_per | state     |
++--------+------+------------+-------+-----------+
+|      1 | ABC  | abc@ms.com | 77.42 | Karnataka |
++--------+------+------------+-------+-----------+
+
+Write query to display name, x_per, average percentage, difference of student's percentage to average percentage for all students
+
+SELECT name, x_per, (SELECT AVG(x_per) FROM st) AVG_PER,  (x_per - (SELECT AVG(x_per) FROM ST)) DIFFERENCE FROM st;
++------+-------+-----------+------------+
+| name | x_per | AVG_PER   | DIFFERENCE |
++------+-------+-----------+------------+
+| ABC  | 77.42 | 58.856667 |  18.563333 |
+| BCD  | 33.00 | 58.856667 | -25.856667 |
+| CDE  | 77.24 | 58.856667 |  18.383333 |
+| def  | 74.69 | 58.856667 |  15.833333 |
+| efg  | 66.00 | 58.856667 |   7.143333 |
+| fgh  | 33.00 | 58.856667 | -25.856667 |
+| ghi  | 33.00 | 58.856667 | -25.856667 |
+| ijk  | 79.36 | 58.856667 |  20.503333 |
+| AED  | 56.00 | 58.856667 |  -2.856667 |
++------+-------+-----------+------------+
+
+Write a query demonstatre subquery in FROM clause
+
+When subquery is used with the FROM clause then a temporary table will be generated and this temporary table is not having any name that's why it is mandatory to alias with the result of subquery with FROM clause. This table alias may or may not be used with the column names in outer query.
+
+SELECT rollNo, x_per
+FROM (SELECT rollNo, name, x_per FROM st) T;
++--------+-------+
+| rollNo | x_per |
++--------+-------+
+|      1 | 77.42 |
+|      2 | 33.00 |
+|      3 | 77.24 |
+|      4 | 74.69 |
+|      5 | 66.00 |
+|      6 | 33.00 |
+|      7 | 33.00 |
+|      8 | 79.36 |
+|     10 | 56.00 |
++--------+-------+
+
+SELECT rollNumber, 10_per
+FROM (SELECT rollNo RollNumber, name, x_per 10_per FROM st) T;
++------------+--------+
+| RollNumber | 10_per |
++------------+--------+
+|          1 |  77.42 |
+|          2 |  33.00 |
+|          3 |  77.24 |
+|          4 |  74.69 |
+|          5 |  66.00 |
+|          6 |  33.00 |
+|          7 |  33.00 |
+|          8 |  79.36 |
+|         10 |  56.00 |
++------------+--------+
+
+Write a query to find state and average x_per for all state such that include only those states whose average x_per is more than that of Karnataka
+
+SELECT state, AVG(x_per)
+FROM st
+GROUP BY state
+HAVING AVG(x_per) > (SELECT AVG(x_per) FROM st WHERE state = 'Karnataka');
++-------------+------------+
+| state       | AVG(x_per) |
++-------------+------------+
+| Maharashtra |  77.240000 |
+| West Bengal |  74.690000 |
+| Haryana     |  79.360000 |
++-------------+------------+
+
+Add a record to the 'product' table with following data
+pro_id: 7, pro_name: snacks, MRP: 90.00 MFG_DATE: 2022-01-01 category_id: should be same as of category_id of Food Items
+
+INSERT INTO product VALUES (7, 'snacks', 90.00, '2022-01-01', (SELECT cat_id FROM category WHERE cat_name = 'Food Items'));
+
+Aliasing is not required if outer query and inner query are applied on the different tables but if they are applied on same table then it is necessary to use alias in the sub query.
+
+Add a record to the 'st' table with following data
+rollNo: 11, name: PQR, email: pqr@gmail.com, state: Himachal Pradesh, x_per: maximum x_per of all students
+
+#Incorrect Query
+INSERT INTO st VALUES (11, 'PQR', 'pqr@gmail.com', 'Himachal Pradesh', (SELECT MAX(x_per) FROM st));
+ERROR 1093 (HY000): You can't specify target table 'st' for update in FROM clause
+
+#Correct Query
+INSERT INTO st VALUES (11, 'PQR', 'pqr@gmail.com', (SELECT MAX(x_per) FROM st S), 'Himachal Pradesh');
+
+Write a query to find record of all scholars whose x_per is more than average x_per of all scholars
+SELECT * FROM st WHERE x_per > (SELECT AVG(x_per) FROM st);
++--------+------+---------------+-------+------------------+
+| rollNo | name | email         | x_per | state            |
++--------+------+---------------+-------+------------------+
+|      1 | ABC  | abc@ms.com    | 77.42 | Karnataka        |
+|      3 | CDE  | cde@ms.com    | 77.24 | Maharashtra      |
+|      4 | def  | def@ms.com    | 74.69 | West Bengal      |
+|      5 | efg  | efg@ms.com    | 66.00 | kerela           |
+|      8 | ijk  | ijk@ms.com    | 79.36 | Haryana          |
+|     11 | PQR  | pqr@gmail.com | 79.36 | Himachal Pradesh |
++--------+------+---------------+-------+------------------+
+
+Write a query to find record of all scholars whose x_per is not equal to the x_per from the scholars of Karnataka
+
+#Incorrect
+SELECT * FROM st WHERE x_per != (SELECT x_per FROM st WHERE state = 'Karnataka');
+
+#Correct
+SELECT * FROM st WHERE x_per NOT IN (SELECT x_per FROM st WHERE state = 'Karnataka');
++--------+------+---------------+-------+------------------+
+| rollNo | name | email         | x_per | state            |
++--------+------+---------------+-------+------------------+
+|      2 | BCD  | bcd@ms.com    | 33.00 | Rajasthan        |
+|      3 | CDE  | cde@ms.com    | 77.24 | Maharashtra      |
+|      4 | def  | def@ms.com    | 74.69 | West Bengal      |
+|      5 | efg  | efg@ms.com    | 66.00 | kerela           |
+|      6 | fgh  | fgh@ms.com    | 33.00 | Delhi            |
+|      7 | ghi  | ghi@ms.com    | 33.00 | Punjab           |
+|      8 | ijk  | ijk@ms.com    | 79.36 | Haryana          |
+|     11 | PQR  | pqr@gmail.com | 79.36 | Himachal Pradesh |
++--------+------+---------------+-------+------------------+
+
+Write a query to find record of all scholars whose x_per is less than the x_per of any scholar of Karnataka
+SELECT x_per FROM st WHERE state = 'Karnataka' --> [77.42, 56.00]
+84.52 < ANY[77.42, 56.00] (F)
+72.52 < ANY[77.42, 56.00] (T)
+51.52 < ANY[77.42, 56.00] (T)
+Summarization
+XX.YY < 77.42 (T)
+
+SELECT * FROM st WHERE x_per < ANY(SELECT x_per FROM st WHERE state = 'Karnataka');
++--------+------+------------+-------+-------------+
+| rollNo | name | email      | x_per | state       |
++--------+------+------------+-------+-------------+
+|      2 | BCD  | bcd@ms.com | 33.00 | Rajasthan   |
+|      3 | CDE  | cde@ms.com | 77.24 | Maharashtra |
+|      4 | def  | def@ms.com | 74.69 | West Bengal |
+|      5 | efg  | efg@ms.com | 66.00 | kerela      |
+|      6 | fgh  | fgh@ms.com | 33.00 | Delhi       |
+|      7 | ghi  | ghi@ms.com | 33.00 | Punjab      |
+|     10 | AED  | NULL       | 56.00 | Karnataka   |
++--------+------+------------+-------+-------------+
+
+Write a query to find record of all scholars whose x_per is more than the x_per of any scholar of Karnataka
+SELECT x_per FROM st WHERE state = 'Karnataka' --> [77.42, 56.00]
+84.52 > ANY[77.42, 56.00] (T)
+72.52 > ANY[77.42, 56.00] (T)
+51.52 > ANY[77.42, 56.00] (F)
+Summarization
+XX.YY > 56.00 (T)
+SELECT * FROM st WHERE x_per > ANY(SELECT x_per FROM st WHERE state = 'Karnataka');
++--------+------+---------------+-------+------------------+
+| rollNo | name | email         | x_per | state            |
++--------+------+---------------+-------+------------------+
+|      1 | ABC  | abc@ms.com    | 77.42 | Karnataka        |
+|      3 | CDE  | cde@ms.com    | 77.24 | Maharashtra      |
+|      4 | def  | def@ms.com    | 74.69 | West Bengal      |
+|      5 | efg  | efg@ms.com    | 66.00 | kerela           |
+|      8 | ijk  | ijk@ms.com    | 79.36 | Haryana          |
+|     11 | PQR  | pqr@gmail.com | 79.36 | Himachal Pradesh |
++--------+------+---------------+-------+------------------+
+
+Write a query to find record of all scholars whose x_per is more than the x_per of all scholar of Karnataka
+SELECT x_per FROM st WHERE state = 'Karnataka' --> [77.42, 56.00]
+84.52 > ALL[77.42, 56.00] (T)
+72.52 > ALL[77.42, 56.00] (F)
+51.52 > ALL[77.42, 56.00] (F)
+Summarization
+XX.YY > 77.42 (T)
+SELECT * FROM st WHERE x_per > ALL(SELECT x_per FROM st WHERE state = 'Karnataka');
++--------+------+---------------+-------+------------------+
+| rollNo | name | email         | x_per | state            |
++--------+------+---------------+-------+------------------+
+|      8 | ijk  | ijk@ms.com    | 79.36 | Haryana          |
+|     11 | PQR  | pqr@gmail.com | 79.36 | Himachal Pradesh |
++--------+------+---------------+-------+------------------+
+
+Write a query to find record of all scholars whose x_per is less than the x_per of all scholar of Karnataka
+SELECT x_per FROM st WHERE state = 'Karnataka' --> [77.42, 56.00]
+84.52 < ALL[77.42, 56.00] (F)
+72.52 < ALL[77.42, 56.00] (F)
+51.52 < ALL[77.42, 56.00] (T)
+Summarization
+XX.YY < 56.00 (T)
+SELECT * FROM st WHERE x_per < ALL(SELECT x_per FROM st WHERE state = 'Karnataka');
++--------+------+------------+-------+-----------+
+| rollNo | name | email      | x_per | state     |
++--------+------+------------+-------+-----------+
+|      2 | BCD  | bcd@ms.com | 33.00 | Rajasthan |
+|      6 | fgh  | fgh@ms.com | 33.00 | Delhi     |
+|      7 | ghi  | ghi@ms.com | 33.00 | Punjab    |
++--------+------+------------+-------+-----------+
+
+Ravin <-----> Deependra
+Say Deependra want 1000/- from Ravin account
+
+CASE-01
+[Ravin: 3000 Deependra: 2000]
+Q.1: UPDATE accounts SET balance = balance - 1000 WHERE name = 'Ravin'; [EXECUTED]
+Q.2: UPDATE accounts SET balance = balance + 1000 WHERE name = 'Deependra'; [EXECUTED]
+[Ravin: 2000 Deependra: 3000]
+
+CASE-02
+[Ravin: 3000 Deependra: 2000]
+Q.1: UPDATE accounts SET balance = balance - 1000 WHERE name = 'Ravin'; [EXECUTED]
+[POWER FAILURE]
+Q.2: UPDATE accounts SET balance = balance + 1000 WHERE name = 'Deependra';
+[Ravin: 2000 Deependra: 2000] !nconsistency
+
+
+Transaction Management
+Let say we have a table named as account that have following structure
+tid int(10) PRIMARY KEY
+name VARCHAR(20) NOT NULL
+amount int NOT NULL
+email VARCHAR(50) NOT NULL
+
+CREATE TABLE account(
+	tid int(10) PRIMARY KEY,
+	name VARCHAR(20) NOT NULL,
+	amount int NOT NULL,
+	email VARCHAR(50) NOT NULL
+);
+
+& make following entries
+1, Dinesh, 4000, dinesh@ms.com
+2, Jayesh, 4000, jayesh@ms.com
+
+INSERT INTO account VALUES (1, 'Dinesh', 4000, 'dinesh@ms.com'), (2, 'Jayesh', 4000, 'jayesh@ms.com');
+
+Say we want to transfer INR 1000 from dinesh’s account to jayesh’s account. Make sure that transaction should be atomic. Write query for this.
+
+START TRANSACTION;
+UPDATE account SET amount = amount - 1000 WHERE name = 'Dinesh';
+UPDATE account SET amount = amount + 1000 WHERE name = 'Jayesh';
+COMMIT;
+
+Say we want to transfer INR 500 from dinesh’s account to jayesh’s account. Use rollback to cancel transaction. Write query for this.
+START TRANSACTION;
+UPDATE account SET amount = amount - 500 WHERE name = 'Dinesh';
+UPDATE account SET amount = amount + 500 WHERE name = 'Jayesh';
+ROLLBACK;
+
+Say we want to transfer INR 500 from dinesh’s account to jayesh’s account then INR 1000 again. Use rollback to cancel the transaction of 1000/- but transaction of 500/- should be commited. Write query for this.
+START TRANSACTION;
+UPDATE account SET amount = amount - 500 WHERE name = 'Dinesh';
+UPDATE account SET amount = amount + 500 WHERE name = 'Jayesh';
+SAVEPOINT A;
+UPDATE account SET amount = amount - 1000 WHERE name = 'Dinesh';
+UPDATE account SET amount = amount + 1000 WHERE name = 'Jayesh';
+ROLLBACK TO SAVEPOINT A;
+COMMIT;
+
+Write query to demonstrate effect of off autocommit.
+SET AUTOCOMMIT = 0;
+
+Write query to demonstrate effect of on autocommit.
+SET AUTOCOMMIT = 1;

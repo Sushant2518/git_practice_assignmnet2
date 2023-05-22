@@ -1,0 +1,437 @@
+Agenda
+Special function (Done)
+Some pending DDL statement [Done]
+GROUP BY [Done]
+HAVING [Done]
+FOREIGN KEY & JOIN [In process]
+	Cross Join, Inner Join, Left Join, Right join, Full Outer Join
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+Special function
+Write a query to rollno, name and email of all students but if a student do not have an email then 'No Email' should be displayed instead of null
+SELECT rollno, name, IF(email IS NOT NULL, email, 'NO EMAIL') FROM st;
+
+Write a query to name, x_per and remark for student such that remark should be according to following criteria
+WHEN x_per < 33.00 - 'FAIL'
+WHEN x_per < 60.00 - 'PASS, IMPROVEMENT REQUIRED'
+WHEN x_per < 75.00 - 'PASS, GOOD JOB'
+ELSE 'GENIUS'
+
+SELECT name,x_per, (
+CASE
+WHEN x_per < 33.00 THEN 'FAIL'
+WHEN x_per < 60.00 THEN 'PASS, IMPROVEMENT REQUIRED'
+WHEN x_per < 75.00 THEN 'PASS, GOOD JOB'
+ELSE 'GENIUS'
+END
+) REMARK FROM st;
+
+For Multi row functions, Group by and having clause
+mysql> CREATE TABLE employee(
+	Eid VARCHAR(4) PRIMARY KEY,
+	Ename VARCHAR(10) NOT NULL,
+	Dept VARCHAR(10) NOT NULL,
+	Salary INT,
+	Designation VARCHAR(10) NOT NULL
+);
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> INSERT INTO employee
+VALUES
+('E001', 'ABC', 'SALES', 25000, 'SM'),
+('E002', 'PQR', 'SALES', 35000, 'SM'),
+('E003', 'RTY', 'HRM', 58000, 'SSM'),
+('E004', 'RED', 'HRM', 38000, 'HR'),
+('E005', 'YUT', 'BDO', 25000, 'BM'),
+('E006', 'RFT', 'BDO', 48000, 'BM');
+Query OK, 6 rows affected (0.00 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+Write query to find sum of salaries paid department wise Using WHERE clause
+SELECT SUM(salary) FROM employee WHERE Dept = 'SALES';
+SELECT SUM(salary) FROM employee WHERE Dept = 'HRM';
+SELECT SUM(salary) FROM employee WHERE Dept = 'BDO';
+
+Write query to find sum of salaries paid department wise Using GROUP BY clause
+SELECT dept, SUM(salary)
+FROM employee
+GROUP BY dept;
+
+[FROM JUNE, WE GONNA HAVE SALARY DOUBLED, OKAY]
+FROM, JOIN, WHERE, GROUP BY, HAVING, SELECT, DISTINCT,ORDER BY
+
+How the above query will execute-
+1. FROM employee
+Eid   Ename  Dept     Salary  Designation
+E001	ABC	   SALES	25000   SM
+E002	PQR	   SALES	35000   SM
+E003	RTY	   HRM	    58000   SSM
+E004	RED	   HRM	    38000   HR
+E005	YUT	   BDO	    25000   BM
+E006	RFT	   BDO	    48000   BM
+
+2. GROUP BY Dept
+Group-1
+E001	ABC	   SALES	  25000   SM
+E002	PQR	   SALES	  35000   SM
+
+Group-2
+E003	RTY	   HRM	    58000   SSM
+E004	RED	   HRM	    38000   HR
+
+Group-3
+E005	YUT	   BDO	    25000   BM
+E006	RFT	   BDO	    48000   BM
+
+3. SELECT Dept, SUM(Salary) "TOTAL_SAL"
+Dept   TOTAL_SAL
+SALES  60000
+HRM    96000
+BDO    73000
+
+Write query to find counting of employee TOTAL_EMP for combinatio of dept & designation
+SELECT dept, designation, COUNT(*) TOTAL_EMP
+FROM employee
+GROUP BY dept, designation;
+
+1. FROM employee
+Eid   Ename  Dept     Salary  Designation
+E001	ABC	   SALES    25000   SM
+E002	PQR	   SALES    35000   SM
+E003	RTY	   HRM	    58000   SSM
+E004	RED	   HRM	    38000   HR
+E005	YUT	   BDO	    25000   BM
+E006	RFT	   BDO	    48000   BM	
+
+2. GROUP BY Dept, designation
+Group-1
+E001	ABC	   SALES	  25000   SM
+E002	PQR	   SALES	  35000   SM
+Group-2
+E003	RTY	   HRM	    58000   SSM
+Group-3
+E004	RED	   HRM	    38000   HR
+Group-4
+E005	YUT	   BDO	    25000   BM
+E006	RFT	   BDO	    48000   BM
+
+3. SELECT dept, designation, COUNT(*) "TOTAL_EMP"
+dept  designation  TOTAL_EMP
+BDO	  BM	         2
+HRM	  HR	         1
+HRM	  SSM	         1
+SALES	SM	         2
+
+Write query to find department name and total salary paid department wise such that you need to count only those employees whose salary is more than 25000; display the records in the descending order of total salary
+
+SELECT dept, SUM(salary)
+FROM employee
+WHERE salary > 25000
+GROUP BY dept
+ORDER BY SUM(salary) DESC;
+
+1. FROM employee
+Eid   Ename  Dept     Salary  Designation
+E001	ABC	   SALES	  25000   SM
+E002	PQR	   SALES	  35000   SM
+E003	RTY	   HRM	    58000   SSM
+E004	RED	   HRM	    38000   HR
+E005	YUT	   BDO	    25000   BM
+E006	RFT	   BDO	    48000   BM	
+
+2. WHERE salary > 25000
+Eid   Ename  Dept     Salary  Designation
+E002	PQR	   SALES	  35000   SM
+E003	RTY	   HRM	    58000   SSM
+E004	RED	   HRM	    38000   HR
+E006	RFT	   BDO	    48000   BM	
+
+3. GROUP BY Dept
+Eid   Ename  Dept     Salary  Designation
+Group-1
+E002	PQR	   SALES	  35000   SM
+
+Group-2
+E003	RTY	   HRM	    58000   SSM
+E004	RED	   HRM	    38000   HR
+
+Group-3
+E006	RFT	   BDO	    48000   BM
+
+4. SELECT Dept, SUM(salary) "TOTAL_SAL"
+Dept   TOTAL_SAL
+SALES  35000
+HRM    96000
+BDO    48000
+
+5. ORDER BY TOTAL_SAL DESC;
+Dept   TOTAL_SAL
+HRM    96000
+BDO    48000
+SALES  35000
+
+Write query to find department name and total salary paid department wise such that you need to include only those departments whose sum of salary is more than 65000. Sort the data in the ascending order of sum of salary.
+SELECT dept, SUM(salary) "TOTAL_SAL"
+FROM employee
+GROUP BY dept
+HAVING SUM(salary) > 65000
+ORDER BY TOTAL_SAL;
+
+1. FROM employee
+Eid   Ename  Dept     Salary  Designation
+E001	ABC	   SALES	  25000   SM
+E002	PQR	   SALES	  35000   SM
+E003	RTY	   HRM	    58000   SSM
+E004	RED	   HRM	    38000   HR
+E005	YUT	   BDO	    25000   BM
+E006	RFT	   BDO	    48000   BM
+
+2. GROUP BY dept
+Group-1
+E001	ABC	   SALES	  25000   SM
+E002	PQR	   SALES	  35000   SM
+
+Group-2
+E003	RTY	   HRM	    58000   SSM
+E004	RED	   HRM	    38000   HR
+
+Group-3
+E005	YUT	   BDO	    25000   BM
+E006	RFT	   BDO	    48000   BM
+
+3. HAVING SUM(salary) > 65000;
+Group-2
+E003	RTY	   HRM	    58000   SSM
+E004	RED	   HRM	    38000   HR
+
+Group-3
+E005	YUT	   BDO	    25000   BM
+E006	RFT	   BDO	    48000   BM
+
+4. SELECT dept, SUM(salary) "TOTAL_SAL"
+dept    TOTAL_SAL
+HRM     96000
+BDO     73000
+
+5. ORDER BY TOTAL_SAL
+dept    TOTAL_SAL
+BDO     73000
+HRM     96000
+
+Query to find department, average salary of the employees department wise such that include only those employees whose designation has letter 'M' anywhere; consider only those groups whose total salary is more than or equal to 60000. Display the records in the descending order of the average salaries.
+
+SELECT dept, AVG(salary) AVG_SAL
+FROM employee
+WHERE designation LIKE '%M%'
+GROUP BY dept
+HAVING SUM(salary) >= 60000
+ORDER BY AVG_SAL DESC;
+
+1. FROM employee
+Eid   Ename  Dept     Salary  Designation
+E001	ABC	   SALES	  25000   SM
+E002	PQR	   SALES	  35000   SM
+E003	RTY	   HRM	    58000   SSM
+E004	RED	   HRM	    38000   HR
+E005	YUT	   BDO	    25000   BM
+E006	RFT	   BDO	    48000   BM
+
+2. WHERE designation LIKE '%M%'
+Eid   Ename  Dept     Salary  Designation
+E001	ABC	   SALES	  25000   SM
+E002	PQR	   SALES	  35000   SM
+E003	RTY	   HRM	    58000   SSM
+E005	YUT	   BDO	    25000   BM
+E006	RFT	   BDO	    48000   BM
+
+3. GROUP BY dept
+Group-1
+E001	ABC	   SALES	  25000   SM
+E002	PQR	   SALES	  35000   SM
+
+Group-2
+E003	RTY	   HRM	    58000   SSM
+
+Group-3
+E005	YUT	   BDO	    25000   BM
+E006	RFT	   BDO	    48000   BM
+
+4. HAVING SUM(salary) >= 60000
+Group-1
+E001	ABC	   SALES	  25000   SM
+E002	PQR	   SALES	  35000   SM
+	
+Group-3
+E005	YUT	   BDO	    25000   BM
+E006	RFT	   BDO	    48000   BM
+
+5. SELECT dept, AVG(salary) "AVG_SALARY"
+dept    AVG_SALARY
+SALES   30000
+BDO     36500
+
+6. ORDER BY AVG_SALARY DESC;
+dept    AVG_SALARY
+BDO     36500
+SALES   30000
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+Difference between DELETE, TRUNCATE and DROP
+DELETE      DELETE RECORD(S)    NO Effect on table Structure  Does not reset the auto_increment
+TRUNCATE    DELETE ALL RECORDS  NO Effect on table Structure  Resets the auto_increment
+DROP        DELETE ALL RECORDS  DROPS THE TABLE
+
+CREATE TABLE t1(
+	c1 INT PRIMARY KEY auto_increment,
+	c2 VARCHAR(20) NOT NULL
+);
+
+INSERT INTO t1 (c2) VALUES ('ABC'), ('BCD'), ('CDE');
+
+SELECT * FROM t1;
++----+-----+
+| c1 | c2  |
++----+-----+
+|  1 | ABC |
+|  2 | BCD |
+|  3 | CDE |
++----+-----+
+
+DELETE FROM t1;
+Empty set (0.00 sec)
+
+INSERT INTO t1 (c2) VALUES ('DEF');
+SELECT * FROM t1;
++----+-----+
+| c1 | c2  |
++----+-----+
+|  4 | DEF |
++----+-----+
+
+TRUNCATE TABLE t1;
+SELECT * FROM t1;
+Empty set (0.00 sec)
+
+INSERT INTO t1 (c2) VALUES ('EFG'), ('FGH');
+SELECT * FROM t1;
++----+-----+
+| c1 | c2  |
++----+-----+
+|  1 | EFG |
+|  2 | FGH |
++----+-----+
+
+DROP TABLE t1;
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+Write query to truncate table employee
+TRUNCATE TABLE employee
+
+[Write query to view record]
+SELECT * FROM employee;
+Empty Set
+
+Write query to drop table employee
+DROP TABLE employee;
+
+[Write query to show table employee]
+SHOW TABLE
+only st table will be in result.
+
+Write query to create table category:
+cat_id int(6) PRIMARY KEY,
+cat_name varchar(20) NOT NULL
+
+CREATE TABLE category(
+	cat_id INT(6) PRIMARY KEY,
+	cat_name varchar(20) NOT NULL
+);
+
+INSERT INTO category
+VALUES
+(1, 'Electronics'),
+(2, 'Stationary'),
+(3, 'Furniture'),
+(4, 'Food Items'),
+(5, 'House-keeping Goods');
+
+Write query to create table product:
+pro_id INT(8) PRIMARY KEY,
+pro_name VARCHAR(20) NOT NULL,
+MRP double(7,2),
+MFG_DATE date NOT NULL,
+category_id INT(6) Foreign Key
+
+CREATE TABLE product(
+	pro_id INT(8) PRIMARY KEY,
+	pro_name VARCHAR(20) NOT NULL,
+	MRP double(7,2),
+	MFG_DATE date NOT NULL,
+	category_id INT(6),
+	CONSTRAINT fk_cat_pro FOREIGN KEY(category_id) REFERENCES category(cat_id)
+);
+
+INSERT INTO product
+VALUES
+(1, 'Parker Pen', 349, '2022-06-16', 2),
+(2, 'Student Chair', 1499, '2021-12-31', 3),
+(3, 'Dark Chocolate', 399, '2022-04-30', 4),
+(4, 'Microwave Oven', 10500, '2022-05-15', 1),
+(5, 'AC', 34500, '2022-05-01', 1),
+(6, 'Footware', 599, '2022-05-01', NULL);
+
+[Write Query to see all records of table category]
+SELECT * FROM category;
+[Write Query to see all records of table product]
+SELECT * FROM product;
+
+Write query to apply cross join on both tables
+SELECT * FROM category CROSS JOIN product;
+OR
+SELECT * FROM category, product;
+OR
+SELECT C.* FROM category C, product P;
+SELECT C.*,P.* FROM category C, product P;
+SELECT C.*,P.MFG_DATE, P.category_id FROM category C, product P;
+
+Write query to display all records from category and product table that has any matching entry.
+SELECT *
+FROM category C INNER JOIN product P
+ON C.cat_id = P.category_id;
+
+OR
+
+SELECT *
+FROM category C, product P
+WHERE C.cat_id = P.category_id; [Poor in performance]
+
+Write query to display all records from category and product table that has any matching entry including all categories. (Hint: Use Left Join)
+SELECT *
+FROM category C LEFT JOIN product P
+ON C.cat_id = P.category_id;
+
+SELECT *
+FROM product P RIGHT JOIN category C
+ON C.cat_id = P.category_id;
+
+Write query to display all records from category and product table that has any matching entry including all products. (Hint: Use Right Join)
+SELECT *
+FROM category C RIGHT JOIN product P
+ON C.cat_id = P.category_id;
+
+SELECT *
+FROM product P LEFT JOIN category C
+ON C.cat_id = P.category_id;
+
+Write query to find cat_name, pro_name, MRP for all product such that include only those products whose price is more than 1000.00
+SELECT cat_name, pro_name, MRP
+FROM category C INNER JOIN product P
+ON C.cat_id = P.category_id AND MRP > 1000.0;
+
+OR 
+
+SELECT cat_name, pro_name, MRP
+FROM category C INNER JOIN product P
+ON C.cat_id = P.category_id
+WHERE MRP > 1000.0; [Poor performance]
